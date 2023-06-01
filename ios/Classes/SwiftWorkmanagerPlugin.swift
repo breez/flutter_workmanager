@@ -490,8 +490,8 @@ extension SwiftWorkmanagerPlugin: FlutterPlugin {
             SwiftWorkmanagerPlugin.registerBackgroundProcessingTaskScheduler(
                 uniqueTaskIdentifier: uniqueTaskIdentifier,
                 earliestBeginInSeconds: delaySeconds,
-                requiresNetworkConnectivity: requiresCharging,
-                requiresExternalPower: requiresNetwork
+                requiresNetworkConnectivity: requiresNetwork,
+                requiresExternalPower: requiresCharging
             )
             result(true)
             print("Registered BackgroundProcessingTask \(uniqueTaskIdentifier) , callbackId \(uniqueTaskIdentifier.lowercasingFirst)")
