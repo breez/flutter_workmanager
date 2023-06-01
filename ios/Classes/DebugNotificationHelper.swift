@@ -37,7 +37,8 @@ class DebugNotificationHelper {
     func showCompletedFetchNotification(identifier: String,
                                         completedDate: Date,
                                         result: UIBackgroundFetchResult,
-                                        elapsedTime: TimeInterval) {
+                                        elapsedTime: TimeInterval)
+    {
         let message =
             """
             Perform backgroundworkerfetch completed:
@@ -53,8 +54,8 @@ class DebugNotificationHelper {
 
     /// Show a notification for iOS Debugging
     func showDebugNotification(completedDate: Date,
-                               content: String
-    ) {
+                               content: String)
+    {
         DebugNotificationHelper.scheduleNotification(identifier: identifier.uuidString,
                                                      title: completedDate.formatted(),
                                                      body: content,
@@ -66,7 +67,8 @@ class DebugNotificationHelper {
     private static func scheduleNotification(identifier: String,
                                              title: String,
                                              body: String,
-                                             icon: ThumbnailGenerator.ThumbnailIcon) {
+                                             icon: ThumbnailGenerator.ThumbnailIcon)
+    {
         guard UserDefaultsHelper.getIsDebug() else {
             logInfo("\(logPrefix) \(#function): plugin is not running in debug mode or on iOS 9 or lower")
             return
@@ -87,7 +89,8 @@ class DebugNotificationHelper {
                                                   threadIdentifier: String,
                                                   title: String,
                                                   body: String,
-                                                  icon: ThumbnailGenerator.ThumbnailIcon) -> UNNotificationRequest {
+                                                  icon: ThumbnailGenerator.ThumbnailIcon) -> UNNotificationRequest
+    {
         let notification = UNMutableNotificationContent()
         notification.title = title
         notification.body = body

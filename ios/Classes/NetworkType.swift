@@ -24,7 +24,7 @@ enum NetworkType: String {
     /// An unmetered network connection is required for this work.
     case unmetered
 
-    /// A temporarily unmetered Network. This capability will be set for 
+    /// A temporarily unmetered Network. This capability will be set for
     /// networks that are generally metered, but are currently unmetered.
     ///
     /// Only applies to Android.
@@ -38,7 +38,7 @@ enum NetworkType: String {
 
 private extension String {
     func camelCased(with separator: Character) -> String {
-        return self.lowercased()
+        return lowercased()
             .split(separator: separator)
             .enumerated()
             .map { $0.offset > 0 ? $0.element.capitalized : $0.element.lowercased() }

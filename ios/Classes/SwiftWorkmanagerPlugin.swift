@@ -15,10 +15,10 @@ public class SwiftWorkmanagerPlugin: FlutterPluginAppLifeCycleDelegate {
     private var _isInitalized = false
     private static var flutterPluginRegistrantCallback: FlutterPluginRegistrantCallback?
 
-    private struct ForegroundMethodChannel {
+    private enum ForegroundMethodChannel {
         static let channelName = "\(SwiftWorkmanagerPlugin.identifier)/foreground_channel_work_manager"
 
-        struct Methods {
+        enum Methods {
             struct Initialize {
                 static let name = "\(Initialize.self)".lowercasingFirst
                 enum Arguments: String {
@@ -77,7 +77,7 @@ public class SwiftWorkmanagerPlugin: FlutterPluginAppLifeCycleDelegate {
         }
     }
 
-    ///Handlers
+    /// Handlers
     @available(iOS 13.0, *)
     private static func handleBGProcessingTask(_ task: BGProcessingTask) {
         NSLog("Workmanagerplugin handle handleBGProcessingTask")
@@ -86,7 +86,7 @@ public class SwiftWorkmanagerPlugin: FlutterPluginAppLifeCycleDelegate {
         // Create an operation that performs the main part of the background task
         let operation = BackgroundTaskOperation(
             task.identifier,
-            inputData: "", //no data
+            inputData: "", // no data
             flutterPluginRegistrantCallback: SwiftWorkmanagerPlugin.flutterPluginRegistrantCallback,
             backgroundMode: .backgroundProcessingTask,
             isInDebug: UserDefaultsHelper.getIsDebug()
@@ -155,7 +155,7 @@ public class SwiftWorkmanagerPlugin: FlutterPluginAppLifeCycleDelegate {
 
     @available(iOS 13.0, *)
     /// Immedately start a background fetch with 29sec timeout - specification by iOS
-    public static func startOnOffTask(identifier: String, taskIdentifier: UIBackgroundTaskIdentifier, inputData:String, delaySeconds: Int64) {
+    public static func startOnOffTask(identifier: String, taskIdentifier: UIBackgroundTaskIdentifier, inputData: String, delaySeconds _: Int64) {
         NSLog("Workmanagerplugin immedately startOnOffTask alias iOS backgroundFetch started - timeout after 30sec.")
 
         let operationQueue = OperationQueue()
@@ -203,7 +203,8 @@ public class SwiftWorkmanagerPlugin: FlutterPluginAppLifeCycleDelegate {
     @objc
     public static func registerAppRefreshTaskScheduler(
         taskIdentifier identifier: String,
-        earliestBeginInSeconds begin: Double) {
+        earliestBeginInSeconds begin: Double
+    ) {
         if #available(iOS 13.0, *) {
             print("Workmanager - registerAppRefreshTaskScheduler withIdentifier \(identifier)")
             // schedule on app did enter background
@@ -257,7 +258,8 @@ public class SwiftWorkmanagerPlugin: FlutterPluginAppLifeCycleDelegate {
     public static func registerBackgroundProcessingTaskScheduler(uniqueTaskIdentifier: String,
                                                                  earliestBeginInSeconds begin: Double,
                                                                  requiresNetworkConnectivity: Bool,
-                                                                 requiresExternalPower: Bool) {
+                                                                 requiresExternalPower: Bool)
+    {
         if #available(iOS 13.0, *) {
             // avoid XCode line length issue in notificationcenterobserver maxx 200 chars line length
             let network = requiresNetworkConnectivity
@@ -299,8 +301,7 @@ public class SwiftWorkmanagerPlugin: FlutterPluginAppLifeCycleDelegate {
         }
     }
 
-    static func callback(_: UIBackgroundFetchResult) {
-    }
+    static func callback(_: UIBackgroundFetchResult) {}
 }
 
 // MARK: - FlutterPlugin conformance
@@ -373,7 +374,8 @@ extension SwiftWorkmanagerPlugin: FlutterPlugin {
         }
         let method = ForegroundMethodChannel.Methods.Initialize.self
         guard let isInDebug = arguments[method.Arguments.isInDebugMode.rawValue] as? Bool,
-              let handle = arguments[method.Arguments.callbackHandle.rawValue] as? Int64 else {
+              let handle = arguments[method.Arguments.callbackHandle.rawValue] as? Int64
+        else {
             result(WMPError.invalidParameters.asFlutterError)
             return
         }
@@ -390,7 +392,8 @@ extension SwiftWorkmanagerPlugin: FlutterPlugin {
         if #available(iOS 13.0, *) {
             let method = ForegroundMethodChannel.Methods.RegisterPeriodicTask.self
             guard let uniqueTaskIdentifier =
-                arguments[method.Arguments.uniqueName.rawValue] as? String else {
+                arguments[method.Arguments.uniqueName.rawValue] as? String
+            else {
                 result(WMPError.invalidParameters.asFlutterError)
                 return
             }
@@ -399,7 +402,8 @@ extension SwiftWorkmanagerPlugin: FlutterPlugin {
             // task will scheduled when app goes to background
             SwiftWorkmanagerPlugin.registerAppRefreshTaskScheduler(
                 taskIdentifier: uniqueTaskIdentifier,
-                earliestBeginInSeconds: Double(initialDelaySeconds))
+                earliestBeginInSeconds: Double(initialDelaySeconds)
+            )
             print("Registered PeriodicTask \(uniqueTaskIdentifier) , callbackId \(uniqueTaskIdentifier.lowercasingFirst) delaySeconds \(initialDelaySeconds)")
             result(true)
             return
@@ -418,24 +422,26 @@ extension SwiftWorkmanagerPlugin: FlutterPlugin {
         if #available(iOS 13.0, *) {
             let method = ForegroundMethodChannel.Methods.RegisterOneOffTask.self
             guard let delaySeconds =
-                arguments[method.Arguments.initialDelaySeconds.rawValue] as? Int64 else {
+                arguments[method.Arguments.initialDelaySeconds.rawValue] as? Int64
+            else {
                 result(WMPError.invalidParameters.asFlutterError)
                 return
             }
             guard let uniqueTaskIdentifier =
-                arguments[method.Arguments.uniqueName.rawValue] as? String else {
+                arguments[method.Arguments.uniqueName.rawValue] as? String
+            else {
                 result(WMPError.invalidParameters.asFlutterError)
                 return
             }
             guard let callBackIdentifier =
-                arguments[method.Arguments.taskName.rawValue] as? String else {
+                arguments[method.Arguments.taskName.rawValue] as? String
+            else {
                 result(WMPError.invalidParameters.asFlutterError)
                 return
             }
             var taskIdentifier: UIBackgroundTaskIdentifier = .invalid
             let inputData =
-                    arguments[method.Arguments.inputData.rawValue] as? String
-
+                arguments[method.Arguments.inputData.rawValue] as? String
 
             taskIdentifier = UIApplication.shared.beginBackgroundTask(withName: uniqueTaskIdentifier, expirationHandler: {
                 // Code to handle if takes way too long
@@ -463,7 +469,8 @@ extension SwiftWorkmanagerPlugin: FlutterPlugin {
         if #available(iOS 13.0, *) {
             let method = ForegroundMethodChannel.Methods.RegisteriOSBackgroundProcessingTask.self
             guard let uniqueTaskIdentifier =
-                arguments[method.Arguments.uniqueName.rawValue] as? String else {
+                arguments[method.Arguments.uniqueName.rawValue] as? String
+            else {
                 result(WMPError.invalidParameters.asFlutterError)
                 return
             }
@@ -474,7 +481,8 @@ extension SwiftWorkmanagerPlugin: FlutterPlugin {
             var requiresNetwork = false
             if let networkTypeInput = arguments[method.Arguments.networkType.rawValue] as? String,
                let networkType = NetworkType(fromDart: networkTypeInput),
-               networkType == .connected || networkType == .metered {
+               networkType == .connected || networkType == .metered
+            {
                 requiresNetwork = true
             }
 
@@ -483,7 +491,8 @@ extension SwiftWorkmanagerPlugin: FlutterPlugin {
                 uniqueTaskIdentifier: uniqueTaskIdentifier,
                 earliestBeginInSeconds: delaySeconds,
                 requiresNetworkConnectivity: requiresCharging,
-                requiresExternalPower: requiresNetwork)
+                requiresExternalPower: requiresNetwork
+            )
             result(true)
             print("Registered BackgroundProcessingTask \(uniqueTaskIdentifier) , callbackId \(uniqueTaskIdentifier.lowercasingFirst)")
 
@@ -543,14 +552,14 @@ extension SwiftWorkmanagerPlugin: FlutterPlugin {
 
 // MARK: - AppDelegate conformance
 
-extension SwiftWorkmanagerPlugin {
-    override public func application(
-        _ application: UIApplication,
+public extension SwiftWorkmanagerPlugin {
+    override func application(
+        _: UIApplication,
         performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) -> Bool {
         let worker = BackgroundWorker(
             mode: .backgroundProcessingTask,
-            inputData: "", 
+            inputData: "",
             flutterPluginRegistrantCallback: SwiftWorkmanagerPlugin.flutterPluginRegistrantCallback
         )
         return worker.performBackgroundRequest(completionHandler)

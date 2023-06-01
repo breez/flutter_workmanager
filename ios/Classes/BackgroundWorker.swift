@@ -46,7 +46,7 @@ class BackgroundWorker {
         self.flutterPluginRegistrantCallback = flutterPluginRegistrantCallback
     }
 
-    private struct BackgroundChannel {
+    private enum BackgroundChannel {
         static let name = "\(SwiftWorkmanagerPlugin.identifier)/background_channel_work_manager"
         static let initialized = "backgroundChannelInitialized"
         static let onResultSendCommand = "onResultSend"
@@ -92,16 +92,15 @@ class BackgroundWorker {
             switch call.method {
             case BackgroundChannel.initialized:
                 result(true) // Agree to Flutter's method invocation
-                    var arguments = self.backgroundMode.onResultSendArguments
-                    if self.inputData != ""{
-                        arguments = arguments.merging(["be.tramckrijte.workmanager.INPUT_DATA": self.inputData]) { current, _ in current }
-                        logDebug("[\(String(describing: self))] \(#function) -> BackgroundWorker.backgroundMethodChannel \(arguments.debugDescription) will called. INPUT_DATA: \(self.inputData)")
-
-                    }
+                var arguments = self.backgroundMode.onResultSendArguments
+                if self.inputData != "" {
+                    arguments = arguments.merging(["be.tramckrijte.workmanager.INPUT_DATA": self.inputData]) { current, _ in current }
+                    logDebug("[\(String(describing: self))] \(#function) -> BackgroundWorker.backgroundMethodChannel \(arguments.debugDescription) will called. INPUT_DATA: \(self.inputData)")
+                }
 
                 backgroundMethodChannel?.invokeMethod(
                     BackgroundChannel.onResultSendCommand,
-                    arguments:arguments,
+                    arguments: arguments,
                     result: { flutterResult in
                         cleanupFlutterResources()
                         let taskSessionCompleter = Date()
@@ -110,7 +109,8 @@ class BackgroundWorker {
                         logInfo("[\(String(describing: self))] \(#function) -> performBackgroundRequest.\(result) (finished in \(taskDuration.formatToSeconds()))")
 
                         completionHandler(result)
-                    })
+                    }
+                )
             default:
                 result(WMPError.unhandledMethod(call.method).asFlutterError)
                 cleanupFlutterResources()

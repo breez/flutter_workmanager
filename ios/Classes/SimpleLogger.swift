@@ -9,7 +9,6 @@ import os
 
 /// Thin wrapper around `OSLogType`
 enum LogType: String {
-
     /// Use this level to capture information about things that might result a failure.
     case `default`
 
@@ -64,11 +63,9 @@ func logFault(_ message: String) {
 }
 
 func log(_ message: String, as type: LogType = .default) {
-
     if #available(iOS 10.0, *) {
         os_log("%@", type: type.osLogType, message)
     } else {
         NSLog("%@", "\(type.rawValue) log: \(message)")
     }
-
 }

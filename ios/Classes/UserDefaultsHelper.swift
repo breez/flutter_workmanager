@@ -8,7 +8,6 @@
 import Foundation
 
 struct UserDefaultsHelper {
-
     // MARK: Properties
 
     private static let userDefaults = UserDefaults(suiteName: "\(SwiftWorkmanagerPlugin.identifier).userDefaults")!
@@ -51,5 +50,4 @@ struct UserDefaultsHelper {
     private static func getValue<T>(for key: Key) -> T? {
         return userDefaults.value(forKey: key.stringValue) as? T
     }
-
 }

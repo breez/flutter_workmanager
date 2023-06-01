@@ -22,10 +22,10 @@ func checkBackgroundRefreshAuthorisation(result: @escaping FlutterResult) -> Bac
             FlutterError(
                 code: "103",
                 message: "BGAppRefreshTask - You have perhaps no iOS background refresh permissions. " +
-                "\n" +
-                "BackgroundRefreshStatus is unknown\n" +
-                "\n" +
-                "Workmanager asked on initialize function for background permissions - when user accepted this you can set a periodic background task",
+                    "\n" +
+                    "BackgroundRefreshStatus is unknown\n" +
+                    "\n" +
+                    "Workmanager asked on initialize function for background permissions - when user accepted this you can set a periodic background task",
                 details: nil
             )
         )
@@ -59,7 +59,7 @@ enum BackgroundAuthorisationState: String {
 
 private extension String {
     func camelCased(with separator: Character) -> String {
-        return self.lowercased()
+        return lowercased()
             .split(separator: separator)
             .enumerated()
             .map { $0.offset > 0 ? $0.element.capitalized : $0.element.lowercased() }

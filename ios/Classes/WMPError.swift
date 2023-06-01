@@ -26,20 +26,20 @@ enum WMPError: Error {
             return "Invalid parameters passed"
         case .methodChannelNotSet:
             return "Method channel not set"
-        case .unhandledMethod(let methodName):
+        case let .unhandledMethod(methodName):
             return "Unhandled method \(methodName)"
-        case .unexpectedMethodArguments(let argumentsDescription):
+        case let .unexpectedMethodArguments(argumentsDescription):
             return "Unexpected call arguments \(argumentsDescription)"
         case .workmanagerIsAlreadyInitialized:
             return "Workmanager was initialized once. It can not initilized a second time"
-        case .bgTaskSchedulingFailed(let error):
+        case let .bgTaskSchedulingFailed(error):
             return """
-                Scheduling the task using BGTaskScheduler has failed.
-                This may be due to too many tasks being scheduled but not run.
-                See the error for details: \(error).
-                """
+            Scheduling the task using BGTaskScheduler has failed.
+            This may be due to too many tasks being scheduled but not run.
+            See the error for details: \(error).
+            """
         case .workmanagerNotInitialized:
-            return  """
+            return """
             You should ensure you have called the 'initialize' function first!
             Example:
             `Workmanager().initialize(

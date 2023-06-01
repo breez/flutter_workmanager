@@ -22,7 +22,8 @@ class BackgroundTaskOperation: Operation {
          inputData: String,
          flutterPluginRegistrantCallback: FlutterPluginRegistrantCallback?,
          backgroundMode: BackgroundMode,
-         isInDebug: Bool) {
+         isInDebug: Bool)
+    {
         self.identifier = identifier
         self.inputData = inputData
         self.flutterPluginRegistrantCallback = flutterPluginRegistrantCallback
@@ -30,7 +31,6 @@ class BackgroundTaskOperation: Operation {
         self.isInDebug = isInDebug
     }
 
-    
     override func main() {
         let taskSessionIdentifier = UUID()
         let taskSessionStart = Date()
@@ -51,13 +51,12 @@ class BackgroundTaskOperation: Operation {
         }
 
         let semaphore = DispatchSemaphore(value: 0)
-        let worker = BackgroundWorker(mode: self.backgroundMode,
-                                                  inputData: self.inputData,
-                                                  flutterPluginRegistrantCallback: self.flutterPluginRegistrantCallback)
+        let worker = BackgroundWorker(mode: backgroundMode,
+                                      inputData: inputData,
+                                      flutterPluginRegistrantCallback: flutterPluginRegistrantCallback)
         DispatchQueue.main.async {
-
             worker.performBackgroundRequest { wk in
-                self.backgroundWorkerResult = wk as UIBackgroundFetchResult;
+                self.backgroundWorkerResult = wk as UIBackgroundFetchResult
                 semaphore.signal()
             }
         }
@@ -69,15 +68,14 @@ class BackgroundTaskOperation: Operation {
                 let debugHelper = DebugNotificationHelper(taskSessionIdentifier)
                 let taskSessionCompleter = Date()
                 let taskDuration = taskSessionCompleter.timeIntervalSince(taskSessionStart)
-                logInfo("[\(String(describing: self))] \(#function) -> BackgroundTaskOperation.main (\(self.backgroundMode) no timeout) (finished in  \(taskDuration.formatToSeconds()))")
+                logInfo("[\(String(describing: self))] \(#function) -> BackgroundTaskOperation.main (\(backgroundMode) no timeout) (finished in  \(taskDuration.formatToSeconds()))")
                 debugHelper.showCompletedFetchNotification(
                     identifier: identifier,
                     completedDate: taskSessionCompleter,
-                    result: self.backgroundWorkerResult,
+                    result: backgroundWorkerResult,
                     elapsedTime: taskDuration
                 )
             }
-            break
 
         default:
             /// maximum execution time 29 seconds + 1 second flutterstuff (callback etc)
@@ -87,11 +85,11 @@ class BackgroundTaskOperation: Operation {
                 let debugHelper = DebugNotificationHelper(taskSessionIdentifier)
                 let taskSessionCompleter = Date()
                 let taskDuration = taskSessionCompleter.timeIntervalSince(taskSessionStart)
-                logInfo("[\(String(describing: self))] \(#function) -> BackgroundTaskOperation.main (\(self.backgroundMode) timeout 29sec)(finished in  \(taskDuration.formatToSeconds()))")
+                logInfo("[\(String(describing: self))] \(#function) -> BackgroundTaskOperation.main (\(backgroundMode) timeout 29sec)(finished in  \(taskDuration.formatToSeconds()))")
                 debugHelper.showCompletedFetchNotification(
                     identifier: identifier,
                     completedDate: taskSessionCompleter,
-                    result: result == DispatchTimeoutResult.success ? self.backgroundWorkerResult : UIBackgroundFetchResult.failed,
+                    result: result == DispatchTimeoutResult.success ? backgroundWorkerResult : UIBackgroundFetchResult.failed,
                     elapsedTime: taskDuration
                 )
             }
